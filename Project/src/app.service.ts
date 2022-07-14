@@ -51,21 +51,6 @@ export class AppService {
     return this.get(fileId);
   }
 
-  //sid: extra api endpoint for getting meta data by id
-  // to do: test out
-  /*
-  getMetadata(fileId: number) {
-    let metadata: any;
-    try {
-      metadata = this.db.getData(`/${fileId}/metadata`);
-    } catch (error) {
-      return { error };
-    }
-    if (!metadata) return false;
-    return metadata;
-  }
-  */
-
   getAll() {
     return this.db.getData('/');
   }

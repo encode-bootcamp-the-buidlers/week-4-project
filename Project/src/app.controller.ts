@@ -121,6 +121,30 @@ export class AppController {
     }
   }
 
+  //sid: API endpoint for getting metadata from server
+  @Get('metadata/:id')
+  @ApiOperation({
+    summary: 'Get metadata of element by id from server storage',
+    description: 'Gets the metadata of element at the requested index',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Element metadata',
+  })
+  @ApiResponse({
+    status: 503,
+    description: 'The server is not configured correctly',
+    type: HttpException,
+  })
+  async getMetadata(@Response({ passthrough: true }) res, @Param('id') id: number) {
+    try {
+      const metadata = this.appService.get(id).metadata;
+      return metadata;
+    } catch (error) {
+      throw new HttpException(error.message, 503);
+    }
+  }
+
   @Get('ipfs-get/:id')
   @ApiOperation({
     summary: 'Get file of element by id from ipfs',
