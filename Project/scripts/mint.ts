@@ -58,7 +58,7 @@ async function main() {
     const currentBalance = await tokenContract.balanceOf(receiverAddress);
     console.log(
       `Account ${receiverAddress} has currently ${parseFloat(
-        ethers.utils.formatEther(currentBalance),
+        currentBalance.toString(),
       )} tokens balance`,
     );
   }
