@@ -2,7 +2,7 @@ import fs from 'fs';
 import { ethers } from 'hardhat';
 import path from 'path';
 import * as tokenJson from '../artifacts/contracts/GoatToken.sol/GoatToken.json';
-import { token } from '../typechain';
+import { GoatToken } from './../typechain-types/contracts/GoatToken';
 import { getSignerProvider, getWallet } from './utils';
 
 async function main() {
@@ -10,7 +10,13 @@ async function main() {
   if (!tokenContractAddress) {
     throw new Error('token contract address needs to be specified.');
   }
-  const metaDataFilePath = process.argv[3];
+
+  const receiverAddress = process.argv[3];
+  if (!receiverAddress) {
+    throw new Error('Filepath to metadata needs to be specified.');
+  }
+
+  const metaDataFilePath = process.argv[4];
   if (!metaDataFilePath) {
     throw new Error('Filepath to metadata needs to be specified.');
   }
@@ -19,12 +25,6 @@ async function main() {
   if (!network) {
     throw new Error('Network needs to be specified.');
   }
-
-  const files = fs.readdirSync(path.resolve(__dirname, metaDataFilePath));
-
-  console.dir(files);
-
-  return;
 
   console.log('Connecting to provider...');
   const wallet = getWallet();
@@ -35,16 +35,33 @@ async function main() {
     tokenContractAddress,
     tokenJson.abi,
     signer,
-  ) as token;
+  ) as GoatToken;
 
-  await tokenContract.mint(receiverAddress, ethers.utils.parseEther(amount));
-  console.log(`Minting ${amount} tokens for address ${receiverAddress}`);
-  const currentBalance = await tokenContract.balanceOf(receiverAddress);
-  console.log(
-    `Account ${receiverAddress} has currently ${parseFloat(
-      ethers.utils.formatEther(currentBalance),
-    )} tokens balance`,
+  const metaDataFile = fs.readFileSync(
+    path.resolve(__dirname, '..', metaDataFilePath),
+    'utf-8',
   );
+
+  for (const [tokenIndex, IpfsData] of Object.entries(
+    JSON.parse(metaDataFile),
+  )) {
+    // @ts-ignore
+    const tokenUri = IpfsData?.ipfs?.path as string | undefined;
+    if (!tokenUri) {
+      throw new Error(`Token ${tokenIndex} has no IPFS path.`);
+    }
+
+    await tokenContract.safeMint(receiverAddress, tokenUri);
+
+    console.log(`Minting ${tokenIndex} for address ${receiverAddress}`);
+
+    const currentBalance = await tokenContract.balanceOf(receiverAddress);
+    console.log(
+      `Account ${receiverAddress} has currently ${parseFloat(
+        ethers.utils.formatEther(currentBalance),
+      )} tokens balance`,
+    );
+  }
 }
 
 main().catch((error) => {
