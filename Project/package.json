@@ -21,8 +21,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "compile": "hardhat compile",
     "node": "hardhat node",
-    "deploy": "hardhat run scripts/deploy.ts localhost",
-    "mint": "hardhat run scripts/mint.ts TOKEN_ADDRESS RECEIVER_ADDRESS ./nft_data/db.json localhost"
+    "deploy:localhost": "yarn ts-node scripts/deploy.ts localhost",
+    "deploy:ropsten": "yarn ts-node scripts/deploy.ts ropsten",
+    "mint:localhost": "yarn ts-node scripts/mint.ts CONTRACT_ADDRESS RECEIVER_ADDRESS ./nft_data/db.json localhost",
+    "mint:ropsten": "yarn ts-node scripts/mint.ts CONTRACT_ADDRESS RECEIVER_ADDRESS ./nft_data/db.json ropsten"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",

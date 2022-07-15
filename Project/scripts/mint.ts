@@ -8,12 +8,12 @@ import { getSignerProvider, getWallet } from './utils';
 async function main() {
   const tokenContractAddress = process.argv[2];
   if (!tokenContractAddress) {
-    throw new Error('token contract address needs to be specified.');
+    throw new Error('Token contract address needs to be specified.');
   }
 
   const receiverAddress = process.argv[3];
   if (!receiverAddress) {
-    throw new Error('Filepath to metadata needs to be specified.');
+    throw new Error('Receiver address needs to be specified.');
   }
 
   const metaDataFilePath = process.argv[4];
@@ -51,9 +51,10 @@ async function main() {
       throw new Error(`Token ${tokenIndex} has no IPFS path.`);
     }
 
-    await tokenContract.safeMint(receiverAddress, tokenUri);
-
     console.log(`Minting ${tokenIndex} for address ${receiverAddress}`);
+
+    const safeMintTx = await tokenContract.safeMint(receiverAddress, tokenUri);
+    await safeMintTx.wait();
 
     const currentBalance = await tokenContract.balanceOf(receiverAddress);
     console.log(
