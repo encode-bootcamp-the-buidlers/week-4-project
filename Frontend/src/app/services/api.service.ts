@@ -18,7 +18,9 @@ export class ApiService {
   }
 
   getTransactionReceipt(hash: string) {
-    return this.http.get<ethers.providers.TransactionReceipt>(`${this.apiUrl}block/transaction/${hash}`);
+    return this.http.get<ethers.providers.TransactionReceipt>(
+      `${this.apiUrl}block/transaction/${hash}`
+    );
   }
 
   requestToken(address: string, amount: number, signature: string) {
@@ -27,5 +29,9 @@ export class ApiService {
       `${this.apiUrl}contract/mint-token`,
       requestDto
     );
+  }
+
+  getNFTCollection() {
+    return this.http.get(`${this.apiUrl}`);
   }
 }

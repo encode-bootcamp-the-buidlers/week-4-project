@@ -1,0 +1,27 @@
+<div class="px-4 py-5 my-5 text-center">
+  <div class="container-fluid">
+    <div class="h1 mb-5">
+      <p>NFT Marketplace</p>
+    </div>
+    <div class="row card-group">
+      <div class="col-4" *ngFor="let nft of nftCollection">
+        <div class="card h-100 mb-4" aria-current="true">
+          <img
+            class="card-img-top"
+            src="{{ nft.image }}"
+            alt="{{ nft.name }}"
+          />
+          <div class="card-body">
+            <h6 class="card-title">
+              <strong>{{ nft.name }}</strong>
+            </h6>
+            <p class="card-text">
+              Buy this NFT to be the coolest one in CryptoTown.
+            </p>
+            <a href="#" class="btn btn-primary">Go back</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
