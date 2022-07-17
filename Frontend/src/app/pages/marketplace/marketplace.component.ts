@@ -99,6 +99,10 @@ export class MarketplaceComponent implements OnInit {
     });
   }
 
+  public openFileInIPFS(url: string) {
+    window.open(url, '_blank');
+  }
+
   public capitalizeWords(str: string) {
     return str
       .toLowerCase()
