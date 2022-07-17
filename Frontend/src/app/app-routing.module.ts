@@ -3,28 +3,29 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { GalleryComponent } from './pages/gallery/gallery.component';
 import { HomeComponent } from './pages/home/home.component';
+import { MarketplaceComponent } from './pages/marketplace/marketplace.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent
+    component: HomeComponent,
   },
-
   {
     path: 'dashboard',
-    component: DashboardComponent
+    component: DashboardComponent,
   },
-
+  {
+    path: 'marketplace',
+    component: MarketplaceComponent,
+  },
   {
     path: 'gallery',
-    component: GalleryComponent
-  }
+    component: GalleryComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule {
-
-}
+export class AppRoutingModule {}
