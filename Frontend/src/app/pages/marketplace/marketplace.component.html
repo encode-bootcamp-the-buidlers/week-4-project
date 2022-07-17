@@ -12,6 +12,13 @@
       <div class="col-4" *ngFor="let nft of nftCollection">
         <div class="card h-100 mb-4" aria-current="true">
           <img
+            *ngIf="nft.image === 'loading'"
+            class="card-img-top"
+            src="assets/images/cat.jpeg"
+            alt="loader"
+          />
+          <img
+            *ngIf="nft.image !== 'loading'"
             class="card-img-top"
             src="{{ nft.image }}"
             alt="{{ nft.name }}"
