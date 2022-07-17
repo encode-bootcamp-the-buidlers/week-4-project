@@ -73,6 +73,12 @@ export class MarketplaceComponent implements OnInit {
 
   nftCollection: { key: string; name: string; cid: string; image: string }[] =
     [];
+  pendingTx: {
+    tokenId: number;
+    hash: string;
+    confirmations: number;
+    updateOngoing?: boolean;
+  }[] = [];
 
   constructor(
     private blockchainService: BlockchainService,
@@ -101,6 +107,31 @@ export class MarketplaceComponent implements OnInit {
 
   public openFileInIPFS(url: string) {
     window.open(url, '_blank');
+  }
+
+  public buyNFT(tokenId: string) {
+    const from = this.blockchainService.tokenContractInstance.address;
+    this.blockchainService
+      .signBuyNFT(
+        this.blockchainService.tokenContractInstance.address,
+        Number(tokenId)
+      )
+      .then((signature) => {
+        this.apiService
+          .buyNFT(
+            from,
+            this.blockchainService.userAddress,
+            Number(tokenId),
+            signature
+          )
+          .subscribe((res) => {
+            this.pendingTx.push({
+              tokenId: Number(tokenId),
+              hash: res.hash,
+              confirmations: res.confirmations,
+            });
+          });
+      });
   }
 
   public capitalizeWords(str: string) {

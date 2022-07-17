@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ethers } from 'ethers';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { BuyNFTDto } from '../dtos/buy-nft.dto';
 import { MintRequestDto } from '../dtos/mint-request.dto';
 
 @Injectable({
@@ -28,6 +29,14 @@ export class ApiService {
     return this.http.post<ethers.providers.TransactionResponse>(
       `${this.apiUrl}contract/mint-token`,
       requestDto
+    );
+  }
+
+  buyNFT(address: string, to: string, tokenId: number, signature: string) {
+    const buyNFTDto = new BuyNFTDto(address, to, tokenId, signature);
+    return this.http.post<ethers.providers.TransactionResponse>(
+      `${this.apiUrl}contract/buy-nft`,
+      buyNFTDto
     );
   }
 

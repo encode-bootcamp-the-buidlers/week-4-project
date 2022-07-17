@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { ethers, EventFilter } from 'ethers';
 import TokenContract from 'src/assets/contracts/Token.json';
@@ -7,31 +8,48 @@ import TokenContract from 'src/assets/contracts/Token.json';
   providedIn: 'root',
 })
 export class BlockchainService {
-  provider: ethers.providers.BaseProvider;
+  private window: any;
+  provider: ethers.providers.Web3Provider;
   userWallet: ethers.Wallet;
+  signer: ethers.Signer;
+  userAddress: string;
   tokenContractInstance: ethers.Contract;
 
-  constructor() {
+  constructor(@Inject(DOCUMENT) private document: Document) {
+    this.window = this.document.defaultView;
     this.provider = this.getProvider();
     this.userWallet = ethers.Wallet.createRandom().connect(this.provider);
+    this.signer = ethers.Wallet.createRandom();
+    this.userAddress = '';
     this.tokenContractInstance = new ethers.Contract(
       environment.tokenContractAddress,
       TokenContract.abi
     ).connect(this.userWallet);
+    this.getSigner();
   }
 
   getProvider() {
-    return ethers.getDefaultProvider(environment.network);
+    return new ethers.providers.Web3Provider(
+      this.window.ethereum,
+      environment.network
+    );
+  }
+
+  async getSigner() {
+    await this.provider.send('eth_requestAccounts', []);
+    this.signer = this.provider.getSigner();
+    this.userAddress = await this.signer.getAddress();
+    console.log('Account:', await this.signer.getAddress());
   }
 
   async address() {
-    const address = this.userWallet.address;
-    return address;
+    return this.userAddress || this.userWallet.address;
   }
 
   async etherBalance() {
+    console.log('user address', this.userAddress);
     const etherBalanceBN = await this.provider.getBalance(
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     const etherBalance = ethers.utils.formatEther(etherBalanceBN) + ' ETH';
     return etherBalance;
@@ -70,7 +88,7 @@ export class BlockchainService {
 
   async tokenBalance() {
     const tokenBalanceBN = await this.tokenContractInstance['balanceOf'](
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     const tokenBalance = ethers.utils.formatEther(tokenBalanceBN);
     return tokenBalance + ' Tokens';
@@ -82,7 +100,9 @@ export class BlockchainService {
   }
 
   watchUserBalanceEther(callbackFn: (...arg0: any) => void) {
-    const filter = [ethers.utils.hexZeroPad(this.userWallet.address, 32)];
+    const filter = [
+      ethers.utils.hexZeroPad(this.userAddress || this.userWallet.address, 32),
+    ];
     this.provider.on(filter, (event) => callbackFn(event));
   }
 
@@ -93,11 +113,11 @@ export class BlockchainService {
 
   watchUserBalanceToken(callbackFn: (...arg0: any) => void) {
     const filterFrom = this.tokenContractInstance.filters['Transfer'](
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     const filterTo = this.tokenContractInstance.filters['Transfer'](
       null,
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     this.tokenContractInstance.on(filterFrom, (event) => callbackFn(event));
     this.tokenContractInstance.on(filterTo, (event) => callbackFn(event));
@@ -105,10 +125,20 @@ export class BlockchainService {
 
   async signTokenRequest(amount: number) {
     const signatureObject = {
-      address: this.userWallet.address,
+      address: this.userAddress,
       amount: amount,
     };
     const signatureMessage = JSON.stringify(signatureObject);
-    return await this.userWallet.signMessage(signatureMessage);
+    return await this.signer.signMessage(signatureMessage);
+  }
+
+  async signBuyNFT(from: string, tokenId: number) {
+    const signatureObject = {
+      to: this.userAddress,
+      tokenId,
+      from,
+    };
+    const signatureMessage = JSON.stringify(signatureObject);
+    return await this.signer.signMessage(signatureMessage);
   }
 }
