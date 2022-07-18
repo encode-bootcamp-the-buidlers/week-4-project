@@ -10,7 +10,7 @@ import { createReadStream } from 'fs';
 import { IPFSHTTPClient } from 'ipfs-http-client/types/src/types';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 
-const DB_PATH = '../db/db.json';
+const DB_PATH = '../blockchain-dev/nft_data/db.json';
 
 @Injectable()
 export class AppService {
