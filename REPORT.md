@@ -19,9 +19,9 @@ yarn ts-node scripts/mint.ts CONTRACT_ADDRESS RECEIVER_ADDRESS ./nft_data/db.jso
 
 ### GoatToken
 
-- Ropsten address of deployed contract: Oxxxx
-- Transaction: 0xxx
-- [Block Explorer](https://ropsten.etherscan.io/address/0xxxxxxx)
+- Ropsten address of deployed contract: 0x4e426e47d0ff0a6818838c5de16d70bff65d5615
+- Transaction: 0xfbec16915d8ae2929d0e3c0a2f929636e1f21beeb7fed04e0415ea4318757ddf
+- [Block Explorer](https://ropsten.etherscan.io/address/0x4e426e47d0ff0a6818838c5de16d70bff65d5615)
 
 ## Operation logs
 
