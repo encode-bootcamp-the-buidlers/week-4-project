@@ -8,6 +8,15 @@ export class MetadataDto {
   })
   name: string;
   @ApiProperty({
+    required: true,
+    description: 'IPFS hash of this object',
+    examples: [
+      'QmdvNmoHorPMCKkFQV4YHkxwpj9P9K2KXNkaZiqdbiYZbt',
+      'QmVLiUoBnEBDjgTX9Qepzs7mUWvz5LC9uZ8suhgRZEHppu',
+    ],
+  })
+  hash: string;
+  @ApiProperty({
     required: false,
     description: 'Description for this object',
   })

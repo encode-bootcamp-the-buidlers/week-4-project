@@ -34,4 +34,8 @@ export class ApiService {
   getNFTCollection() {
     return this.http.get(`${this.apiUrl}`);
   }
+
+  getNFT(index: number) {
+    return this.http.get(`${this.apiUrl}metadata/${index}`);
+  }
 }
