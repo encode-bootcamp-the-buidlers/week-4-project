@@ -1,9 +1,10 @@
+import { lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ethers } from 'ethers';
-import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MintRequestDto } from '../dtos/mint-request.dto';
+import { BlockchainService } from 'src/app/services/blockchain.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,10 @@ import { MintRequestDto } from '../dtos/mint-request.dto';
 export class ApiService {
   apiUrl = environment.apiAddress;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private blockchainService: BlockchainService
+  ) {}
 
   getServerBlock() {
     return this.http.get<ethers.providers.Block>(`${this.apiUrl}block/block`);
@@ -33,5 +37,10 @@ export class ApiService {
 
   getNFTCollection() {
     return this.http.get(`${this.apiUrl}`);
+  }
+
+  async getNFT(index: number) {
+    const tokenURI = await this.blockchainService.tokenURI(index);
+    return lastValueFrom(this.http.get(tokenURI));
   }
 }
