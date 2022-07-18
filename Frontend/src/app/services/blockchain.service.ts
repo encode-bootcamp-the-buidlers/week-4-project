@@ -1,27 +1,52 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { ethers, EventFilter } from 'ethers';
 import TokenContract from 'src/assets/contracts/Token.json';
+import goatTokenJson from '../../../../blockchain-dev/artifacts/contracts/GoatToken.sol/GoatToken.json';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BlockchainService {
-  provider: ethers.providers.BaseProvider;
+  private window: any;
+  provider: ethers.providers.Web3Provider;
   userWallet: ethers.Wallet;
+  signer: ethers.Signer;
   tokenContractInstance: ethers.Contract;
+  goatTokenContract: ethers.Contract;
 
-  constructor() {
+  constructor(@Inject(DOCUMENT) private document: Document) {
+    this.window = this.document.defaultView;
     this.provider = this.getProvider();
     this.userWallet = ethers.Wallet.createRandom().connect(this.provider);
+    this.signer = ethers.Wallet.createRandom();
     this.tokenContractInstance = new ethers.Contract(
       environment.tokenContractAddress,
       TokenContract.abi
     ).connect(this.userWallet);
+    this.goatTokenContract = new ethers.Contract(
+      environment.goatTokenContractAddress,
+      goatTokenJson.abi
+    ).connect(this.userWallet);
+    this.getSignerAndGoatTokenContract();
   }
 
   getProvider() {
-    return ethers.getDefaultProvider(environment.network);
+    return new ethers.providers.Web3Provider(
+      this.window.ethereum,
+      environment.network
+    );
+  }
+
+  async getSignerAndGoatTokenContract() {
+    await this.provider.send('eth_requestAccounts', []);
+    this.signer = this.provider.getSigner();
+    console.log('Account:', await this.signer.getAddress());
+    this.goatTokenContract = new ethers.Contract(
+      environment.goatTokenContractAddress,
+      goatTokenJson.abi
+    ).connect(this.signer);
   }
 
   async address() {
@@ -74,6 +99,10 @@ export class BlockchainService {
     );
     const tokenBalance = ethers.utils.formatEther(tokenBalanceBN);
     return tokenBalance + ' Tokens';
+  }
+
+  async tokenURI(index: number) {
+    return await this.goatTokenContract['tokenURI'](index);
   }
 
   watchBlockNumber(callbackFn: (...arg0: any) => void) {

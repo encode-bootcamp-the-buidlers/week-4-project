@@ -85,7 +85,7 @@ export class MarketplaceComponent implements OnInit {
   }
 
   private getNFT(index: number) {
-    this.apiService.getNFT(index).subscribe((result: any) => {
+    this.apiService.getNFT(index).then((result: any) => {
       if (Object.keys(result).length >= 0) {
         this.nftCollection[index] = {
           key: String(index),
