@@ -26,7 +26,7 @@ contract GoatToken is
         * ERC721Enumerable: Allows enumerating the tokens on chain
         * ERC721URIStorage: A more flexible but more expensive way of storing metadata
         * ERC721Burnable:   A way for token holders to burn their own tokens
-        **/ 
+        **/
 
     /// @dev Counters are used for keeping record of the Id of NFT minted
     using Counters for Counters.Counter;
@@ -34,7 +34,7 @@ contract GoatToken is
     Counters.Counter private _tokenIdCounter;
 
     constructor() ERC721("GoatToken", "GTK") {}
-    
+
     /// @dev safeMint mints an NFT token to the requesting user's address
     /// @param to mint to address, @param uri is the ipfs location of metadata of the minted NFT
     function safeMint(address to, string memory uri) public onlyOwner {
@@ -62,9 +62,9 @@ contract GoatToken is
     {
         super._burn(tokenId);
     }
-    
+
     /// @param tokenId is the token id of the nft in transaction
-    /// @return tokenURI returns the ipfs location of the NFT's metadata
+    /// @return returns the API endpoint to get NFT's metadata
     function tokenURI(uint256 tokenId)
         public
         view
