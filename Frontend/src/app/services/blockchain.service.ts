@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { ethers, EventFilter } from 'ethers';
 import TokenContract from 'src/assets/contracts/Token.json';
+import goatTokenJson from '../../../../blockchain-dev/artifacts/contracts/GoatToken.sol/GoatToken.json';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ export class BlockchainService {
   signer: ethers.Signer;
   userAddress: string;
   tokenContractInstance: ethers.Contract;
+  goatTokenContract: ethers.Contract;
 
   constructor(@Inject(DOCUMENT) private document: Document) {
     this.window = this.document.defaultView;
@@ -25,7 +27,11 @@ export class BlockchainService {
       environment.tokenContractAddress,
       TokenContract.abi
     ).connect(this.userWallet);
-    this.getSigner();
+    this.goatTokenContract = new ethers.Contract(
+      environment.goatTokenContractAddress,
+      goatTokenJson.abi
+    ).connect(this.userWallet);
+    this.getSignerAndGoatTokenContract();
   }
 
   getProvider() {
@@ -35,11 +41,15 @@ export class BlockchainService {
     );
   }
 
-  async getSigner() {
+  async getSignerAndGoatTokenContract() {
     await this.provider.send('eth_requestAccounts', []);
     this.signer = this.provider.getSigner();
     this.userAddress = await this.signer.getAddress();
     console.log('Account:', await this.signer.getAddress());
+    this.goatTokenContract = new ethers.Contract(
+      environment.goatTokenContractAddress,
+      goatTokenJson.abi
+    ).connect(this.signer);
   }
 
   async address() {
@@ -92,6 +102,10 @@ export class BlockchainService {
     );
     const tokenBalance = ethers.utils.formatEther(tokenBalanceBN);
     return tokenBalance + ' Tokens';
+  }
+
+  async tokenURI(index: number) {
+    return await this.goatTokenContract['tokenURI'](index);
   }
 
   watchBlockNumber(callbackFn: (...arg0: any) => void) {
