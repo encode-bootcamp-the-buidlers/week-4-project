@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ProviderService } from 'src/shared/services/provider.service';
 import { SignerService } from 'src/shared/services/signer.service';
 import { ethers } from 'ethers';
-import * as TokenContract from 'src/assets/contracts/GoatToken.json';
+import * as TokenContract from 'src/assets/contracts/ERC20Token.json';
 
 @Injectable()
 export class ERC20ContractService {

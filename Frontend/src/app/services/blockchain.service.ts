@@ -148,7 +148,6 @@ export class BlockchainService {
 
   async signBuyNFT(tokenId: number) {
     const tokenOwner = await this.goatTokenContract['ownerOf'](tokenId);
-    console.log('Token owner is', tokenOwner);
     const signatureObject = {
       from: tokenOwner,
       to: '0xc9307DAfE95199485885b3E45B88aa799cAcEbDa',

@@ -36,8 +36,8 @@ export class ApiService {
     );
   }
 
-  buyNFT(address: string, to: string, tokenId: number, signature: string) {
-    const buyNFTDto = new BuyNFTDto(address, to, tokenId, signature);
+  buyNFT(from: string, to: string, tokenId: number, signature: string) {
+    const buyNFTDto = new BuyNFTDto(from, to, tokenId, signature);
     return this.http.post<ethers.providers.TransactionResponse>(
       `${this.apiUrl}contract/buy-nft`,
       buyNFTDto
