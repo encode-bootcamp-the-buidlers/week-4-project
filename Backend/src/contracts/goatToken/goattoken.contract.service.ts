@@ -32,7 +32,7 @@ export class GoatTokenContractService {
   }
 
   async buyNFT(from: string, to: string, tokenId: number) {
-    const tx = await this.contractSignedInstance.safeTransferFrom(
+    const tx = await this.contractSignedInstance.transferFrom(
       from,
       to,
       tokenId,
@@ -47,6 +47,6 @@ export class GoatTokenContractService {
       signatureMessage,
       signature,
     );
-    return signerAddress == from;
+    return signerAddress == to;
   }
 }
