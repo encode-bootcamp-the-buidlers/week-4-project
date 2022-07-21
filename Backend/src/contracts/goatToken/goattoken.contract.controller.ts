@@ -8,16 +8,16 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GoatTokenContractService } from './goattoken.contract.service';
-import { BuyNFTDto } from '../dtos/buy-nft.dto';
+import { GetNFTDto } from '../dtos/get-nft.dto';
 
 @Controller('contract')
 @ApiTags('contract')
 export class GoatTokenContractController {
   constructor(private readonly contractService: GoatTokenContractService) {}
 
-  @Post('buy-nft')
+  @Post('get-nft')
   @ApiOperation({
-    summary: 'Buy NFT',
+    summary: 'Get NFT',
     description: 'Requests to transfer the NFT to a provided address',
   })
   @ApiResponse({
@@ -45,16 +45,16 @@ export class GoatTokenContractController {
     description: 'Server Error',
     type: HttpException,
   })
-  async buyNFT(@Body() buyNFTRequestDto: BuyNFTDto) {
-    const signature = buyNFTRequestDto.signature;
+  async getNFT(@Body() getNFTRequestDto: GetNFTDto) {
+    const signature = getNFTRequestDto.signature;
     if (!signature || signature.length == 0)
       throw new HttpException('Missing signature', 401);
     let signatureValid = false;
     try {
       signatureValid = this.contractService.checkSignature(
-        buyNFTRequestDto.from,
-        buyNFTRequestDto.to,
-        buyNFTRequestDto.tokenId,
+        getNFTRequestDto.from,
+        getNFTRequestDto.to,
+        getNFTRequestDto.tokenId,
         signature,
       );
     } catch (error) {
@@ -66,10 +66,10 @@ export class GoatTokenContractController {
         403,
       );
     try {
-      const result = await this.contractService.buyNFT(
-        buyNFTRequestDto.from,
-        buyNFTRequestDto.to,
-        buyNFTRequestDto.tokenId,
+      const result = await this.contractService.getNFT(
+        getNFTRequestDto.from,
+        getNFTRequestDto.to,
+        getNFTRequestDto.tokenId,
       );
       return result;
     } catch (error) {

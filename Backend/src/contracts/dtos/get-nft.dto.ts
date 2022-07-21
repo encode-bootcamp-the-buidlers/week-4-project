@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BuyNFTDto {
+export class GetNFTDto {
   @ApiProperty({
     required: true,
     description: 'Address current owner of the NFT token',

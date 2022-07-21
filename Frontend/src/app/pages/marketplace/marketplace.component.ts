@@ -90,8 +90,8 @@ export class MarketplaceComponent implements OnInit {
     this.getNFTs();
   }
 
-  private getNFT(index: number) {
-    this.apiService.getNFT(index).then((result: any) => {
+  private getNFTData(index: number) {
+    this.apiService.getNFTURI(index).then((result: any) => {
       if (Object.keys(result).length >= 0) {
         this.nftCollection[index] = {
           key: String(index),
@@ -108,7 +108,7 @@ export class MarketplaceComponent implements OnInit {
     this.apiService.getNFTCollection().subscribe((result: any) => {
       nftCollectionLength = Object.keys(result).length;
       for (let i = 0; i < nftCollectionLength; i++) {
-        this.getNFT(i);
+        this.getNFTData(i);
       }
     });
   }
@@ -117,12 +117,12 @@ export class MarketplaceComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  public buyNFT(tokenId: string) {
+  public getNFT(tokenId: string) {
     this.blockchainService
-      .signBuyNFT(Number(tokenId))
+      .signGetNFT(Number(tokenId))
       .then(({ from, signature }) => {
         this.apiService
-          .buyNFT(
+          .getNFT(
             from,
             this.blockchainService.userAddress,
             Number(tokenId),

@@ -31,7 +31,7 @@ export class GoatTokenContractService {
     );
   }
 
-  async buyNFT(from: string, to: string, tokenId: number) {
+  async getNFT(from: string, to: string, tokenId: number) {
     const tx = await this.contractSignedInstance.transferFrom(
       from,
       to,

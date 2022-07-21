@@ -1,4 +1,4 @@
-export class BuyNFTDto {
+export class GetNFTDto {
   constructor(
     public from: string,
     public to: string,
