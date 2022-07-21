@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import * as TokenContract from 'src/assets/contracts/GoatToken.json';
 
 @Injectable()
-export class ContractService {
+export class ERC20ContractService {
   contractPublicInstance: ethers.Contract;
   contractSignedInstance: ethers.Contract;
 

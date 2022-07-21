@@ -20,9 +20,9 @@ import {
 import { Express } from 'express';
 import { Blob } from 'buffer';
 import { AppService } from './app.service';
-import { FileDataDto } from './dtos/file-data.dto';
-import { SetMetadataDto } from './dtos/set-metadata.dto';
-import { UploadIpfsDto } from './dtos/upload-ipfs.dto';
+import { FileDataDto } from './contracts/dtos/file-data.dto';
+import { SetMetadataDto } from './contracts/dtos/set-metadata.dto';
+import { UploadIpfsDto } from './contracts/dtos/upload-ipfs.dto';
 
 @ApiTags('file')
 @Controller()
@@ -135,7 +135,10 @@ export class AppController {
     description: 'The server is not configured correctly',
     type: HttpException,
   })
-  async getMetadata(@Response({ passthrough: true }) res, @Param('id') id: number) {
+  async getMetadata(
+    @Response({ passthrough: true }) res,
+    @Param('id') id: number,
+  ) {
     try {
       const metadata = this.appService.get(id).metadata;
       return metadata;

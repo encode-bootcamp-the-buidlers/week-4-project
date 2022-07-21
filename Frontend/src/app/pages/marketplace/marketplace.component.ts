@@ -118,13 +118,9 @@ export class MarketplaceComponent implements OnInit {
   }
 
   public buyNFT(tokenId: string) {
-    const from = this.blockchainService.tokenContractInstance.address;
     this.blockchainService
-      .signBuyNFT(
-        this.blockchainService.tokenContractInstance.address,
-        Number(tokenId)
-      )
-      .then((signature) => {
+      .signBuyNFT(Number(tokenId))
+      .then(({ from, signature }) => {
         this.apiService
           .buyNFT(
             from,

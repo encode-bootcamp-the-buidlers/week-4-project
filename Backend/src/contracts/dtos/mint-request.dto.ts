@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BuyNFTDto {
+export class MintRequestDto {
   @ApiProperty({
     required: true,
     description: 'Address that will receive the tokens',
