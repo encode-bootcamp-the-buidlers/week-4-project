@@ -13,6 +13,7 @@ export class BlockchainService {
   provider: ethers.providers.Web3Provider;
   userWallet: ethers.Wallet;
   signer: ethers.Signer;
+  userAddress: string;
   tokenContractInstance: ethers.Contract;
   goatTokenContract: ethers.Contract;
 
@@ -21,6 +22,7 @@ export class BlockchainService {
     this.provider = this.getProvider();
     this.userWallet = ethers.Wallet.createRandom().connect(this.provider);
     this.signer = ethers.Wallet.createRandom();
+    this.userAddress = '';
     this.tokenContractInstance = new ethers.Contract(
       environment.tokenContractAddress,
       TokenContract.abi
@@ -42,6 +44,7 @@ export class BlockchainService {
   async getSignerAndGoatTokenContract() {
     await this.provider.send('eth_requestAccounts', []);
     this.signer = this.provider.getSigner();
+    this.userAddress = await this.signer.getAddress();
     console.log('Account:', await this.signer.getAddress());
     this.goatTokenContract = new ethers.Contract(
       environment.goatTokenContractAddress,
@@ -50,13 +53,13 @@ export class BlockchainService {
   }
 
   async address() {
-    const address = this.userWallet.address;
-    return address;
+    return this.userAddress || this.userWallet.address;
   }
 
   async etherBalance() {
+    console.log('user address', this.userAddress);
     const etherBalanceBN = await this.provider.getBalance(
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     const etherBalance = ethers.utils.formatEther(etherBalanceBN) + ' ETH';
     return etherBalance;
@@ -95,7 +98,7 @@ export class BlockchainService {
 
   async tokenBalance() {
     const tokenBalanceBN = await this.tokenContractInstance['balanceOf'](
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     const tokenBalance = ethers.utils.formatEther(tokenBalanceBN);
     return tokenBalance + ' Tokens';
@@ -111,7 +114,9 @@ export class BlockchainService {
   }
 
   watchUserBalanceEther(callbackFn: (...arg0: any) => void) {
-    const filter = [ethers.utils.hexZeroPad(this.userWallet.address, 32)];
+    const filter = [
+      ethers.utils.hexZeroPad(this.userAddress || this.userWallet.address, 32),
+    ];
     this.provider.on(filter, (event) => callbackFn(event));
   }
 
@@ -122,11 +127,11 @@ export class BlockchainService {
 
   watchUserBalanceToken(callbackFn: (...arg0: any) => void) {
     const filterFrom = this.tokenContractInstance.filters['Transfer'](
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     const filterTo = this.tokenContractInstance.filters['Transfer'](
       null,
-      this.userWallet.address
+      this.userAddress || this.userWallet.address
     );
     this.tokenContractInstance.on(filterFrom, (event) => callbackFn(event));
     this.tokenContractInstance.on(filterTo, (event) => callbackFn(event));
@@ -134,10 +139,24 @@ export class BlockchainService {
 
   async signTokenRequest(amount: number) {
     const signatureObject = {
-      address: this.userWallet.address,
+      address: this.userAddress,
       amount: amount,
     };
     const signatureMessage = JSON.stringify(signatureObject);
-    return await this.userWallet.signMessage(signatureMessage);
+    return await this.signer.signMessage(signatureMessage);
+  }
+
+  async signGetNFT(tokenId: number) {
+    const tokenOwner = await this.goatTokenContract['ownerOf'](tokenId);
+    const signatureObject = {
+      from: tokenOwner,
+      to: this.userAddress,
+      tokenId,
+    };
+    const signatureMessage = JSON.stringify(signatureObject);
+    return {
+      from: tokenOwner,
+      signature: await this.signer.signMessage(signatureMessage),
+    };
   }
 }

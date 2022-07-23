@@ -73,6 +73,12 @@ export class MarketplaceComponent implements OnInit {
 
   nftCollection: { key: string; name: string; hash: string; image: string }[] =
     [];
+  pendingTx: {
+    tokenId: number;
+    hash: string;
+    confirmations: number;
+    updateOngoing?: boolean;
+  }[] = [];
 
   constructor(
     private blockchainService: BlockchainService,
@@ -84,8 +90,8 @@ export class MarketplaceComponent implements OnInit {
     this.getNFTs();
   }
 
-  private getNFT(index: number) {
-    this.apiService.getNFT(index).then((result: any) => {
+  private getNFTData(index: number) {
+    this.apiService.getNFTURI(index).then((result: any) => {
       if (Object.keys(result).length >= 0) {
         this.nftCollection[index] = {
           key: String(index),
@@ -102,13 +108,34 @@ export class MarketplaceComponent implements OnInit {
     this.apiService.getNFTCollection().subscribe((result: any) => {
       nftCollectionLength = Object.keys(result).length;
       for (let i = 0; i < nftCollectionLength; i++) {
-        this.getNFT(i);
+        this.getNFTData(i);
       }
     });
   }
 
   public openFileInIPFS(url: string) {
     window.open(url, '_blank');
+  }
+
+  public getNFT(tokenId: string) {
+    this.blockchainService
+      .signGetNFT(Number(tokenId))
+      .then(({ from, signature }) => {
+        this.apiService
+          .getNFT(
+            from,
+            this.blockchainService.userAddress,
+            Number(tokenId),
+            signature
+          )
+          .subscribe((res) => {
+            this.pendingTx.push({
+              tokenId: Number(tokenId),
+              hash: res.hash,
+              confirmations: res.confirmations,
+            });
+          });
+      });
   }
 
   public capitalizeWords(str: string) {

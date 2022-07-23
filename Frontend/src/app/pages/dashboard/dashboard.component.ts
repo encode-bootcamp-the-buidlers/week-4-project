@@ -39,14 +39,16 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.pageContents = this.INITIAL_CONTENTS;
-    this.updateValues();
-    this.updateVariables();
-    this.watchBlockNumber();
-    this.watchUserBalanceEther();
-    this.watchContractSupply();
-    this.watchUserBalanceToken();
-    this.watchServerBlock();
-    this.watchPendingRequests();
+    setTimeout(() => {
+      this.updateValues();
+      this.updateVariables();
+      this.watchBlockNumber();
+      this.watchUserBalanceEther();
+      this.watchContractSupply();
+      this.watchUserBalanceToken();
+      this.watchServerBlock();
+      this.watchPendingRequests();
+    }, 1000); // there is probably a cool way with watchers to do this, but Angular changed a lot since the last time
   }
 
   private updateValues() {
@@ -170,11 +172,7 @@ export class DashboardComponent implements OnInit {
     const amount = Number(amountStr);
     this.blockchainService.signTokenRequest(amount).then((signature) => {
       this.apiService
-        .requestToken(
-          this.blockchainService.userWallet.address,
-          amount,
-          signature
-        )
+        .requestToken(this.blockchainService.userAddress, amount, signature)
         .subscribe((res) => {
           this.pendingTx.push({
             amount: amount,

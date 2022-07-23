@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ethers } from 'ethers';
 import { environment } from 'src/environments/environment';
+import { GetNFTDto } from '../dtos/get-nft.dto';
 import { MintRequestDto } from '../dtos/mint-request.dto';
 import { BlockchainService } from 'src/app/services/blockchain.service';
 
@@ -35,11 +36,19 @@ export class ApiService {
     );
   }
 
+  getNFT(from: string, to: string, tokenId: number, signature: string) {
+    const getNFTDto = new GetNFTDto(from, to, tokenId, signature);
+    return this.http.post<ethers.providers.TransactionResponse>(
+      `${this.apiUrl}contract/get-nft`,
+      getNFTDto
+    );
+  }
+
   getNFTCollection() {
     return this.http.get(`${this.apiUrl}`);
   }
 
-  async getNFT(index: number) {
+  async getNFTURI(index: number) {
     const tokenURI = await this.blockchainService.tokenURI(index);
     return lastValueFrom(this.http.get(tokenURI));
   }
