@@ -159,4 +159,9 @@ export class BlockchainService {
       signature: await this.signer.signMessage(signatureMessage),
     };
   }
+
+  async checkIsOwner(tokenId: number) {
+    const tokenOwner = await this.goatTokenContract['ownerOf'](tokenId);
+    return tokenOwner === this.userAddress;
+  }
 }
