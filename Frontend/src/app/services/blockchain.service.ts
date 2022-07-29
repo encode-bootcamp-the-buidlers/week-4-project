@@ -160,6 +160,21 @@ export class BlockchainService {
     };
   }
 
+  async payForNFT(tokenId: number) {
+    const tokenOwner = await this.goatTokenContract['ownerOf'](tokenId);
+    const transactionParameters = {
+      from: ethers.utils.getAddress(tokenOwner),
+      to: ethers.utils.getAddress(this.userAddress),
+      value: String(ethers.utils.parseUnits('0.00001', 'ether')),
+    };
+    const txHash = await this.window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [transactionParameters],
+    });
+    console.log('HASH', txHash);
+    return txHash ? true : false;
+  }
+
   async checkIsOwner(tokenId: number) {
     const tokenOwner = await this.goatTokenContract['ownerOf'](tokenId);
     return tokenOwner === this.userAddress;

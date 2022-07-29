@@ -33,6 +33,13 @@
             </p>
             <button
               class="btn btn-primary mx-2"
+              (click)="buyNFT(nft.key)"
+              [disabled]="nft.isOwner"
+            >
+              Buy it
+            </button>
+            <button
+              class="btn btn-primary mx-2"
               (click)="getNFT(nft.key)"
               [disabled]="nft.isOwner"
             >

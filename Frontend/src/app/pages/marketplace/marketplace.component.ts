@@ -154,6 +154,14 @@ export class MarketplaceComponent implements OnInit {
       });
   }
 
+  public buyNFT(tokenId: string) {
+    this.blockchainService.payForNFT(Number(tokenId)).then((isPayed) => {
+      if (isPayed) {
+        this.getNFT(tokenId);
+      }
+    });
+  }
+
   public capitalizeWords(str: string) {
     return str
       .toLowerCase()
