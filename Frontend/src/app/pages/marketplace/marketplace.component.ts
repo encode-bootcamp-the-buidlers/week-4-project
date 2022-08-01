@@ -14,65 +14,80 @@ export class MarketplaceComponent implements OnInit {
       name: 'Goat of American Football',
       hash: 'QmdvNmoHorPMCKkFQV4YHkxwpj9P9K2KXNkaZiqdbiYZbt',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '1',
       name: 'Goat of Basketball',
       hash: 'QmVLiUoBnEBDjgTX9Qepzs7mUWvz5LC9uZ8suhgRZEHppu',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '2',
       name: 'Goat of Chess',
       hash: 'Qmd63VhjRK3er8PFQURfsp6vV3bBiQbwZTpQ1wsKaiaGBx',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '3',
       name: 'Goat of Football',
       hash: 'QmUKXuqEuR4EyiSHmHHVEDD7T81bAoSCiLZdkL6325FgF6',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '4',
       name: 'Goat of Free Solo',
       hash: 'QmXnmQbtsLHmx8MG8x2K1PbLEoY2X76CZ75MCA4MyuXRvp',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '5',
       name: 'Goat of MMA',
       hash: 'QmWhizFTbfPPX3RxzQtjyL8DX1FARrXUXf4JW5iKSBht7p',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '6',
       name: 'Goat of Rock Climbing',
       hash: 'QmYfybB7ZF84UbF3KWPdwVu1JTiEwP77Dnkfyaqpt8pVop',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '7',
       name: 'Goat of Strength',
       hash: 'QmdQKYiwupHDTK3Wiu2hLaE9zj6YuB7jGoDTeouovYpgq2',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '8',
       name: 'Goat of Swimming',
       hash: 'Qmb9WzL9BDaSGJjRj59H9esi2k4PJQQPtGR9nT3R1R4ErT',
       image: 'loading',
+      isOwner: false,
     },
     {
       key: '9',
       name: 'Goat of Tennis',
       hash: 'Qmd7n4ZLFuHfjkUSDVfeLCJX9gvbPGdEt35pZtp1dvNpf5',
       image: 'loading',
+      isOwner: false,
     },
   ];
 
-  nftCollection: { key: string; name: string; hash: string; image: string }[] =
-    [];
+  nftCollection: {
+    key: string;
+    name: string;
+    hash: string;
+    image: string;
+    isOwner: boolean;
+  }[] = [];
   pendingTx: {
     tokenId: number;
     hash: string;
@@ -91,13 +106,14 @@ export class MarketplaceComponent implements OnInit {
   }
 
   private getNFTData(index: number) {
-    this.apiService.getNFTURI(index).then((result: any) => {
+    this.apiService.getNFTURI(index).then(async (result: any) => {
       if (Object.keys(result).length >= 0) {
         this.nftCollection[index] = {
           key: String(index),
           name: this.capitalizeWords(result.name),
           hash: result.hash,
           image: `https://ipfs.io/ipfs/${result.hash}?filename=${result.name}.jpg`,
+          isOwner: await this.blockchainService.checkIsOwner(index),
         };
       }
     });
@@ -136,6 +152,14 @@ export class MarketplaceComponent implements OnInit {
             });
           });
       });
+  }
+
+  public buyNFT(tokenId: string) {
+    this.blockchainService.payForNFT(Number(tokenId)).then((isPayed) => {
+      if (isPayed) {
+        this.getNFT(tokenId);
+      }
+    });
   }
 
   public capitalizeWords(str: string) {

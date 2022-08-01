@@ -31,7 +31,20 @@
             <p class="card-text">
               Buy this NFT to be the coolest one in CryptoTown.
             </p>
-            <a class="btn btn-primary mx-2" (click)="getNFT(nft.key)">Get it</a>
+            <button
+              class="btn btn-primary mx-2"
+              (click)="buyNFT(nft.key)"
+              [disabled]="nft.isOwner"
+            >
+              Buy it
+            </button>
+            <button
+              class="btn btn-primary mx-2"
+              (click)="getNFT(nft.key)"
+              [disabled]="nft.isOwner"
+            >
+              Get it
+            </button>
           </div>
         </div>
       </div>
